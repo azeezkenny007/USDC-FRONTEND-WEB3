@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState,useEffect } from "react";
 import { providers, Contract, utils } from "ethers";
 import { abi } from "../constants/UsdcMetadata.json";
 import { USDCGoerliAddress, UDSCaddress } from "../constants/index";
@@ -6,6 +6,7 @@ import { abi as usdcAbi } from "../constants/mainUsdcMetadata.json";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Web3Modal from "web3modal";
+import {motion} from "framer-motion"
 
 type Props = {};
 
@@ -14,6 +15,7 @@ export default function Usdc({}: Props) {
   const [approve, setApprove] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [isApproved, setIsApproved] = useState<boolean>(false);
+  const [connect,setIsConnected]=useState<boolean>(false)
   const [donationAmount,setDonationAmount]= useState<string>("")
   const web3ModalRef = useRef<any>();
   const getProviderAndSigner = async (): Promise<{
@@ -82,32 +84,45 @@ export default function Usdc({}: Props) {
     }
   };
 
-  const connectWallet = async () => {
+
+  const ConnectionWallet=async()=>{
+   if (!connectwallet) {
+    web3ModalRef.current = new Web3Modal({
+      network: "goerli",
+      providerOptions: {},
+      disableInjectedProvider: false,
+    });
+   }
+   connectWalletFunction()
+  }
+
+  const connectWalletFunction = async () => {
     try {
       await getProviderAndSigner();
       setWalletConnected(true);
-      if (!connectwallet) {
-       web3ModalRef.current = new Web3Modal({
-         network: "goerli",
-         providerOptions: {},
-         disableInjectedProvider: false,
-       });
-      }
     } catch (e: unknown) {
       console.log(e);
     }
   };
+
+  useEffect(() => {
+     if(connectwallet){
+       setIsConnected(true)
+     }
+  }, [connectwallet])
+  
 
   const render=()=>{
      if (!connectwallet){
       return(
        <div className="flex flex-col items-center justify-center max-h-screen space-y-4">
        <div className="text-[50px] font-bold font-mono text-white">Connect your Wallet to be able to donate</div>
-       <div style={{transition:"all 0.4s !important"}} className="flex justify-center items-center font-mono hover:shadow-md animate-pulse transition-all hover:shadow-white bg-blue-800 py-4 rounded-lg w-40 text-white cursor-pointer" onClick={connectWallet}>Connect wallet</div>
+       <div style={{transition:"all 0.4s !important"}} className="flex justify-center items-center font-mono hover:shadow-md animate-pulse transition-all hover:shadow-white bg-blue-800 py-4 rounded-lg w-40 text-white cursor-pointer" onClick={ConnectionWallet}>Connect wallet</div>
        </div>
       )
      }
      else{
+      if(connect){
       if(approve){
        return(
         <div className="p-2 bg-blue-800 text-white shadow-lg">Approving the smart contract.....</div>
@@ -127,7 +142,16 @@ export default function Usdc({}: Props) {
            </div>
           )
       }
+      else{
+        return(
+         <div className="flex items-center justify-center flex-col space-y-4">
+             <div className="text-[50px] font-mono font-bold text-white">Approve the amount</div>
+              <button className= " bg-blue-700 py-3 px-7 rounded-xl flex items-center justify-center  text-white" onClick={Approve}>Approve</button>
+         </div>
+        )
+      }
      }
+    }
     
 
   }
