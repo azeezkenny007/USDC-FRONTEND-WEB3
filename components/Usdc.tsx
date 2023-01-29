@@ -1,4 +1,4 @@
-import React, { useRef, useState,useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { providers, Contract, utils } from "ethers";
 import { abi } from "../constants/UsdcMetadata.json";
 import { USDCGoerliAddress, UDSCaddress } from "../constants/index";
@@ -6,17 +6,49 @@ import { abi as usdcAbi } from "../constants/mainUsdcMetadata.json";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Web3Modal from "web3modal";
-import {motion} from "framer-motion"
+import { motion } from "framer-motion";
+import Image from "next/image"
+import Draw1 from "../public/draw1.svg"
+import Draw2 from "../public/draw2.svg"
+import Draw3 from "../public/draw3.svg"
+import Draw4 from "../public/draw4.svg"
+import Draw5 from "../public/draw5.svg"
+import Draw6 from "../public/draw6.svg"
+import Draw7 from "../public/draw7.svg"
+import Draw8 from "../public/draw8.svg"
 
 type Props = {};
 
 export default function Usdc({}: Props) {
+  const nextVariant = {
+    initial: {
+      x: "-100vw",
+    },
+    animate: {
+      x: 0,
+      transition: { type: "spring", delay: 1.5, stiffness: 120, duration: 1.5 },
+    },
+    hover:{
+      scale:1.1
+    }
+  };
+
+  const upVariant = {
+    initial: {
+      x: "100vw",
+    },
+    animate: {
+      x: 0,
+      transition: { type: "spring", delay: 1.5, stiffness: 120, duration: 1.5 },
+    },
+  };
+
   const [connectwallet, setWalletConnected] = useState<boolean>(false);
   const [approve, setApprove] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [isApproved, setIsApproved] = useState<boolean>(false);
-  const [connect,setIsConnected]=useState<boolean>(false)
-  const [donationAmount,setDonationAmount]= useState<string>("")
+  const [connect, setIsConnected] = useState<boolean>(false);
+  const [donationAmount, setDonationAmount] = useState<string>("");
   const web3ModalRef = useRef<any>();
   const getProviderAndSigner = async (): Promise<{
     provider: providers.Web3Provider;
@@ -84,17 +116,16 @@ export default function Usdc({}: Props) {
     }
   };
 
-
-  const ConnectionWallet=async()=>{
-   if (!connectwallet) {
-    web3ModalRef.current = new Web3Modal({
-      network: "goerli",
-      providerOptions: {},
-      disableInjectedProvider: false,
-    });
-   }
-   connectWalletFunction()
-  }
+  const ConnectionWallet = async () => {
+    if (!connectwallet) {
+      web3ModalRef.current = new Web3Modal({
+        network: "goerli",
+        providerOptions: {},
+        disableInjectedProvider: false,
+      });
+    }
+    connectWalletFunction();
+  };
 
   const connectWalletFunction = async () => {
     try {
@@ -106,57 +137,117 @@ export default function Usdc({}: Props) {
   };
 
   useEffect(() => {
-     if(connectwallet){
-       setIsConnected(true)
-     }
-  }, [connectwallet])
-  
-
-  const render=()=>{
-     if (!connectwallet){
-      return(
-       <div className="flex flex-col items-center justify-center max-h-screen space-y-4">
-       <div className="text-[50px] font-bold font-mono text-white">Connect your Wallet to be able to donate</div>
-       <div style={{transition:"all 0.4s !important"}} className="flex justify-center items-center font-mono hover:shadow-md animate-pulse transition-all hover:shadow-white bg-blue-800 py-4 rounded-lg w-40 text-white cursor-pointer" onClick={ConnectionWallet}>Connect wallet</div>
-       </div>
-      )
-     }
-     else{
-      if(connect){
-      if(approve){
-       return(
-        <div className="p-2 bg-blue-800 text-white shadow-lg">Approving the smart contract.....</div>
-       )
-      }
-      if(loading){
-        return(
-           <div className="text-blue-700">Loading please wait.......</div>
-        )
-      }
-      if(isApproved){
-          return(
-           <div className="flex ">
-           <input type="text" name="" id="" onChange={(e)=>{setDonationAmount(e.target.value)}} />
-           <div>Donate in Usdc to buy a tree</div>
-           <div className="flex items-center justify-center bg-blue-400 px-6 py-4" onClick={()=>{fund(donationAmount)}}>Donate</div>
-           </div>
-          )
-      }
-      else{
-        return(
-         <div className="flex items-center justify-center flex-col space-y-4">
-             <div className="text-[50px] font-mono font-bold text-white">Approve the amount</div>
-              <button className= " bg-blue-700 py-3 px-7 rounded-xl flex items-center justify-center  text-white" onClick={Approve}>Approve</button>
-         </div>
-        )
-      }
-     }
+    if (connectwallet) {
+      setIsConnected(true);
     }
-    
+  }, [connectwallet]);
 
-  }
+  const render = () => {
+    if (!connectwallet) {
+      return (
+        <div className="flex flex-col items-center md:flex-row  justify-center max-h-screen space-x-8 ">
+         <div className="flex flex-col flex-1 space-y-6  ">
+          <motion.div
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5, duration: 1.5 }}
+            initial={{ opacity: 0 }}
+            className="md:text-[50px] text-[20px] font-bold  font-mono w-96 text-white capitalize"
+          >
+            Connect your Wallet  to donate 💳
+          </motion.div>
+          <motion.button
+            variants={nextVariant}
+            initial="initial"
+            animate="animate"
+            whileHover={"hover"}
+            style={{transition:"all 0.3s"}}
+            className="flex justify-center items-center font-mono hover:shadow-md animate-pulse text-[20px]  transition-all hover:shadow-white bg-black py-4 rounded-3xl w-60 text-white cursor-pointer font-bold hover:scale-50"
+            onClick={ConnectionWallet}
+          >
+            Connect wallet 💱
+          </motion.button>
+          </div>
+          <div className="flex-1 animate-pulse scale-75 md:scale-100">
+             <Image src={Draw1} height={"400"} width={"400"} alt="" />
+          </div>
+        </div>
 
-  return <div>
-       <div>{render()}</div>
-  </div>;
+      );
+    } else {
+      if (connect) {
+        if (approve) {
+          return (
+            <div className="p-2 bg-blue-800 text-white shadow-lg">
+              Approving the smart contract.....
+            </div>
+          );
+        }
+        if (loading) {
+          return (
+            <div className="text-blue-700">Loading please wait.......</div>
+          );
+        }
+        if (isApproved) {
+          return (
+            <div className="flex ">
+              <input
+                type="text"
+                name=""
+                id=""
+                onChange={(e) => {
+                  setDonationAmount(e.target.value);
+                }}
+              />
+              <div>Donate in Usdc to buy a tree</div>
+              <div
+                className="flex items-center justify-center bg-blue-400 px-6 py-4"
+                onClick={() => {
+                  fund(donationAmount);
+                }}
+              >
+                Donate
+              </div>
+            </div>
+          );
+        } else {
+          return (
+            <div className="flex flex-col md:flex-row items-center justify-between">
+            <motion.div
+            variants={nextVariant}
+            initial="initial"
+            animate="animate"
+            onClick={Approve}
+             
+              className="flex items-stretch flex-[2] justify-center flex-col space-y-8"
+            >
+              <div className="md:text-[50px] mt-4 md:mt-0 text-[20px] font-mono font-bold capitalize text-white">
+                Approve the amount 🦠
+              </div>
+              <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 justify-start space-x-4 items-center"> 
+
+                <span className="text-white text-[23px] font-mono ">Enter your amount:💰</span>
+              <input type="text" name="" id="" onChange={(e)=>{}} className="rounded-3xl ml-[-20px]  md:ml-0 bg-black border-white w-[250px] py-4 text-white flex items-center justify-center hover:shadow-white text-center outline-none placeholder-white" placeholder="The maximum amount is 1000"  />
+              </div>
+              <motion.button style={{transition:"all 0.3s"}}
+                className="flex justify-center items-center font-mono hover:shadow-md animate-pulse text-[20px]  transition-all hover:shadow-white bg-black py-4 rounded-3xl w-60 text-white cursor-pointer font-bold hover:scale-105"
+                
+              >
+                Approve🦧
+              </motion.button>
+            </motion.div>
+            <motion.div  className="flex-1 animate-pulse scale-75 md:scale-100">
+            <Image src={Draw7} height={"400"} width={"400"} alt="" />
+            </motion.div>
+            </div>
+          );
+        }
+      }
+    }
+  };
+
+  return (
+    <div>
+      <div>{render()}</div>
+    </div>
+  );
 }
