@@ -1,5 +1,6 @@
 import React,{useRef} from 'react'
 import { providers,Contract } from 'ethers';
+i
 
 
 type Props = {}

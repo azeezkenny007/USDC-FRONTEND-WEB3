@@ -1,0 +1,4 @@
+export const UDSCaddress:string ="0x07865c6E87B9F70255377e024ace6630C1Eaa37F"
+export const USDCMumbaiAddress:string="0x432A2a0C004659E25EeA8190D573C2520A655961"
+export const USDCGoerliAddress:string="0xa3C362FA467370B8C160d55Ed2D0039a2379f244"
+
