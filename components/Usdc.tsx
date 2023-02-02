@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { providers, Contract, utils } from "ethers";
+import { providers, Contract, utils, Signer } from "ethers";
 import { abi } from "../constants/UsdcMetadata.json";
 import { USDCGoerliAddress, UDSCaddress } from "../constants/index";
 import { abi as usdcAbi } from "../constants/mainUsdcMetadata.json";
@@ -76,6 +76,12 @@ export default function Usdc({}: Props) {
     return { provider: web3Provider, signer };
   };
 
+  const checkIfUserHasConnectedBefore = async () => {
+    const { provider, signer } = await getProviderAndSigner();
+    const account = await signer.getAddress();
+    console.log(account);
+  };
+
   const getUsdcContractInstance = async (
     address: string,
     abi: any,
@@ -86,47 +92,52 @@ export default function Usdc({}: Props) {
 
   const Approve = async () => {
     try {
-   
-        const { provider, signer } = await getProviderAndSigner();
-        const UsdcContract = await getUsdcContractInstance(
-          UDSCaddress,
-          usdcAbi,
-          signer
-        );
-        const approve = await UsdcContract.approve(
-          USDCGoerliAddress,
-          utils.parseUnits(approveAmount.toString(), 6)
-        );
-        setApprove(true);
-        await approve.wait();
-        setApprove(false);
-        setIsApproved(true);
-        toast.success("The Amount has been approved",{icon:"🌠",theme:"dark"})
-     
+      const { provider, signer } = await getProviderAndSigner();
+      const UsdcContract = await getUsdcContractInstance(
+        UDSCaddress,
+        usdcAbi,
+        signer
+      );
+      const approve = await UsdcContract.approve(
+        USDCGoerliAddress,
+        utils.parseUnits(approveAmount.toString(), 6)
+      );
+      setApprove(true);
+      await approve.wait();
+      setApprove(false);
+      setIsApproved(true);
+      toast.success("The Amount has been approved", {
+        icon: "🌠",
+        theme: "dark",
+      });
     } catch (e: unknown) {
-      console.log(e)
-      toast.error("The amount was not approved",{icon:"❌",theme:"dark"})
+      console.log(e);
+      toast.error("The amount was not approved", { icon: "❌", theme: "dark" });
     }
   };
 
   const fund = async (amount: string) => {
     try {
-     
-        const { provider, signer } = await getProviderAndSigner();
-        const UsdcContract = await getUsdcContractInstance(
-          USDCGoerliAddress,
-          abi,
-          signer
-        );
-        const fund = await UsdcContract.fund(amount, { gasLimit: 30000 });
-        setLoading(true);
-        await fund.wait();
-        setLoading(false);
-        toast.success("The Smart contract has been successfully funded",{icon:"💸",theme:"dark"})
-   
+      const { provider, signer } = await getProviderAndSigner();
+      const UsdcContract = await getUsdcContractInstance(
+        USDCGoerliAddress,
+        abi,
+        signer
+      );
+      const fund = await UsdcContract.fund(amount, { gasLimit: 30000 });
+      setLoading(true);
+      await fund.wait();
+      setLoading(false);
+      toast.success("The Smart contract has been successfully funded", {
+        icon: "💸",
+        theme: "dark",
+      });
     } catch (e: unknown) {
-      console.log(e)
-      toast.error("The smart Contract could not fund the smart contract",{icon:"❌",theme:"dark"})
+      console.log(e);
+      toast.error("The smart Contract could not fund the smart contract", {
+        icon: "❌",
+        theme: "dark",
+      });
     }
   };
 
@@ -140,8 +151,8 @@ export default function Usdc({}: Props) {
         });
       }
       connectWalletFunction();
-      setIsConnected(true)
-      localStorage.setItem("true","connect")
+      setIsConnected(true);
+      await checkIfUserHasConnectedBefore();
       toast.success("Successfully connected wallet", {
         icon: "✅",
         theme: "dark",
@@ -165,21 +176,23 @@ export default function Usdc({}: Props) {
   };
 
   useEffect(() => {
-    setTimeout(()=>{
-      if (localStorage.getItem("true")==="connect") {
+    async function getSessionData() {
+      const { provider, signer } = await getProviderAndSigner();
+      if (signer) {
         setWalletConnected(true);
-        setIsConnected(false)
-        setApprove(false)
-        console.log("👱‍♀️")
-        console.log(localStorage.getItem("true"))
-        toast.warning("You have connected before❗❗",{icon:"👼",theme:"dark"})
+        setIsConnected(false);
+        setApprove(false);
+        console.log("👱‍♀️");
+        toast.warning("You have connected before❗❗", {
+          icon: "👼",
+          theme: "dark",
+        });
+      }
     }
-    if(localStorage.getItem("true")===null){
-       setWalletConnected(false)
-    }
-    },4000)
-    
-  },[connect]);
+    setTimeout(() => {
+      getSessionData()
+    }, 4000);
+  }, [connect]);
 
   const render = () => {
     if (!connectwallet) {
@@ -229,81 +242,80 @@ export default function Usdc({}: Props) {
           return (
             <div className="flex  justify-between items-center  ">
               <div className="flex flex-col justify-center text-center  items-center  ml- space-y-8">
-              <input
-               
-                type="text"
-                name=""
-                id=""
-                onChange={(e) => {
-                  setDonationAmount(e.target.value);
-                }}
-                className="rounded-3xl ml-[-20px] mt-5  md:ml-0 bg-black border-white w-[250px] py-4 text-white flex items-center justify-center hover:shadow-white text-center outline-none placeholder-white order-2"
-                    placeholder="Enter your amount 💲💲"
-              />
-              <div className="text-[45px] w-96 text-white font-mono font-bold order-1 capitalize">Donate in Usdc to buy a tree</div>
-              <div
-                className="order-3 flex justify-center items-center font-mono hover:shadow-md animate-pulse text-[20px]  transition-all hover:shadow-white bg-black py-4 rounded-3xl w-60 text-white cursor-pointer font-bold scale-75 md:scale-100  md:hover:scale-105 hover:scale-90 ml-14  md:ml-2 lg:ml-0 "
-                onClick={() => {
-                  fund(donationAmount);
-                }}
-              >
-                Donate
-              </div>
+                <input
+                  type="text"
+                  name=""
+                  id=""
+                  onChange={(e) => {
+                    setDonationAmount(e.target.value);
+                  }}
+                  className="rounded-3xl ml-[-20px] mt-5  md:ml-0 bg-black border-white w-[250px] py-4 text-white flex items-center justify-center hover:shadow-white text-center outline-none placeholder-white order-2"
+                  placeholder="Enter your amount 💲💲"
+                />
+                <div className="text-[45px] w-96 text-white font-mono font-bold order-1 capitalize">
+                  Donate in Usdc to buy a tree
+                </div>
+                <div
+                  className="order-3 flex justify-center items-center font-mono hover:shadow-md animate-pulse text-[20px]  transition-all hover:shadow-white bg-black py-4 rounded-3xl w-60 text-white cursor-pointer font-bold scale-75 md:scale-100  md:hover:scale-105 hover:scale-90 ml-14  md:ml-2 lg:ml-0 "
+                  onClick={() => {
+                    fund(donationAmount);
+                  }}
+                >
+                  Donate
+                </div>
               </div>
               <div className="flex justify-center items-center ml-32 ">
-              <Image src={Draw4} height={"400"} width={"400"} alt="" />
+                <Image src={Draw4} height={"400"} width={"400"} alt="" />
               </div>
             </div>
           );
         }
-        } else {
-          return (
-            <div className="flex flex-col lg:flex-row items-center justify-between">
-              <motion.div
-                variants={nextVariant}
-                initial="initial"
-                animate="animate"
-                
-                className="flex items-stretch flex-[2] justify-center flex-col my-2 space-y-8 "
-              >
-                <div className="md:text-[50px] mt-4 md:mt-0 text-[30px] font-mono font-bold capitalize text-white" >
-                  Approve the amount 🦠
-                </div>
-                <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 justify-start space-x-4 items-center">
-                  <span className="text-white text-[23px] font-mono ">
-                    Enter your amount:💰
-                  </span>
-                  <input
-                    type="text"
-                    name=""
-                    id=""
-                    onChange={(e) => {
-                      setApproveAmount(parseInt(e.target.value));
-                    }}
-                    className="rounded-3xl ml-[-20px]  md:ml-0 bg-black border-white w-[250px] py-4 text-white flex items-center justify-center hover:shadow-white text-center outline-none placeholder-white"
-                    placeholder="The maximum amount is 1000"
-                  />
-                </div>
-                {approveAmount.toString().length > 1 && (
-                  <motion.button
+      } else {
+        return (
+          <div className="flex flex-col lg:flex-row items-center justify-between">
+            <motion.div
+              variants={nextVariant}
+              initial="initial"
+              animate="animate"
+              className="flex items-stretch flex-[2] justify-center flex-col my-2 space-y-8 "
+            >
+              <div className="md:text-[50px] mt-4 md:mt-0 text-[30px] font-mono font-bold capitalize text-white">
+                Approve the amount 🦠
+              </div>
+              <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 justify-start space-x-4 items-center">
+                <span className="text-white text-[23px] font-mono ">
+                  Enter your amount:💰
+                </span>
+                <input
+                  type="text"
+                  name=""
+                  id=""
+                  onChange={(e) => {
+                    setApproveAmount(parseInt(e.target.value));
+                  }}
+                  className="rounded-3xl ml-[-20px]  md:ml-0 bg-black border-white w-[250px] py-4 text-white flex items-center justify-center hover:shadow-white text-center outline-none placeholder-white"
+                  placeholder="The maximum amount is 1000"
+                />
+              </div>
+              {approveAmount.toString().length > 1 && (
+                <motion.button
                   variants={nextVariant}
-                   initial="initial"
-                     animate="animate"
-                    style={{ transition: "all 0.3s" }}
-                    className="flex justify-center items-center font-mono hover:shadow-md animate-pulse text-[20px]  transition-all hover:shadow-white bg-black py-4 rounded-3xl w-60 text-white cursor-pointer scale-75 md:scale-100 font-bold md:hover:scale-105 hover:scale-90 ml-16 md:ml-0"
-                    onClick={Approve}
-                  >
-                    Approve🦧
-                  </motion.button>
-                )}
-              </motion.div>
-              <motion.div className="flex-1 animate-pulse md:mt-4 lg:mt-0 scale-75 md:scale-100">
-                <Image src={Draw7} height={"400"} width={"400"} alt="" />
-              </motion.div>
-            </div>
-          );
-        }
-  
+                  initial="initial"
+                  animate="animate"
+                  style={{ transition: "all 0.3s" }}
+                  className="flex justify-center items-center font-mono hover:shadow-md animate-pulse text-[20px]  transition-all hover:shadow-white bg-black py-4 rounded-3xl w-60 text-white cursor-pointer scale-75 md:scale-100 font-bold md:hover:scale-105 hover:scale-90 ml-16 md:ml-0"
+                  onClick={Approve}
+                >
+                  Approve🦧
+                </motion.button>
+              )}
+            </motion.div>
+            <motion.div className="flex-1 animate-pulse md:mt-4 lg:mt-0 scale-75 md:scale-100">
+              <Image src={Draw7} height={"400"} width={"400"} alt="" />
+            </motion.div>
+          </div>
+        );
+      }
     }
   };
 
