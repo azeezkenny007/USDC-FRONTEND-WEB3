@@ -152,7 +152,6 @@ export default function Usdc({}: Props) {
       }
       connectWalletFunction();
       setIsConnected(true);
-      await checkIfUserHasConnectedBefore();
       toast.success("Successfully connected wallet", {
         icon: "✅",
         theme: "dark",
@@ -178,7 +177,8 @@ export default function Usdc({}: Props) {
   useEffect(() => {
     async function getSessionData() {
       const { provider, signer } = await getProviderAndSigner();
-      if (signer) {
+      const account = await signer.getAddress()
+      if (account.length!==null && account.length>1) {
         setWalletConnected(true);
         setIsConnected(false);
         setApprove(false);
