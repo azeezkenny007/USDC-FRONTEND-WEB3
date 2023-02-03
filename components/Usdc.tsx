@@ -119,7 +119,9 @@ export default function Usdc({}: Props) {
 
   const Approve = async () => {
     try {
-      const { provider, signer } = await getProviderAndSigner();
+      // const { provider, signer } = await getProviderAndSigner();
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer= provider.getSigner()
       const UsdcContract = await getUsdcContractInstance(
         UDSCaddress,
         usdcAbi,
