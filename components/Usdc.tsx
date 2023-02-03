@@ -197,7 +197,7 @@ export default function Usdc({}: Props) {
   };
 
 
-  useEffect(() => {
+  useEffect (() => {
     async function getSessionData() {
       const { ethereum } = window;
       const accounts: string[] = await ethereum.request({
@@ -219,7 +219,7 @@ export default function Usdc({}: Props) {
     }
     setTimeout(() => {
        getSessionData();
-    }, 4000);
+    }, 2000);
   }, [currentAccount]);
 
   const render = () => {
@@ -267,8 +267,8 @@ export default function Usdc({}: Props) {
         }
         if (isApproved) {
           return (
-            <div className="flex  justify-between items-center  ">
-              <div className="flex flex-col justify-center text-center  items-center  ml- space-y-8">
+            <div className="flex flex-col sm:flex-row  justify-between items-center my-4  sm:my-0 ">
+              <div className="flex flex-col  justify-center text-center  items-center  ml- space-y-8">
                 <input
                   type="text"
                   name=""
@@ -279,11 +279,11 @@ export default function Usdc({}: Props) {
                   className="rounded-3xl ml-[-20px] mt-5  md:ml-0 bg-black border-white w-[250px] py-4 text-white flex items-center justify-center hover:shadow-white text-center outline-none placeholder-white order-2"
                   placeholder="Enter your amount 💲💲"
                 />
-                <div className="text-[45px] w-96 text-white font-mono font-bold order-1 capitalize">
+                <div className="md:text-[45px] sm:text-[27px] text-[20px] w-96 text-white font-mono font-bold order-1 capitalize">
                   Donate in Usdc to buy a tree
                 </div>
                 <div
-                  className="order-3 flex justify-center items-center font-mono hover:shadow-md animate-pulse text-[20px]  transition-all hover:shadow-white bg-black py-4 rounded-3xl w-60 text-white cursor-pointer font-bold scale-75 md:scale-100  md:hover:scale-105 hover:scale-90 ml-14  md:ml-2 lg:ml-0 "
+                  className="order-3 flex justify-center items-center font-mono hover:shadow-md animate-pulse text-[20px]  transition-all hover:shadow-white bg-black py-4 rounded-3xl w-60 text-white cursor-pointer font-bold scale-75 md:scale-100  md:hover:scale-105 hover:scale-90 ml-[-30px]  md:ml-2 lg:ml-0 "
                   onClick={() => {
                     fund(donationAmount);
                   }}
@@ -291,7 +291,7 @@ export default function Usdc({}: Props) {
                   Donate
                 </div>
               </div>
-              <div className="flex justify-center items-center ml-32 ">
+              <div className="flex justify-center animate-pulse lg:scale-100 scale-75 my-4 md:my-0 ml-[-10px] items-center md:ml-32 ">
                 <Image src={Draw4} height={"400"} width={"400"} alt="" />
               </div>
             </div>
