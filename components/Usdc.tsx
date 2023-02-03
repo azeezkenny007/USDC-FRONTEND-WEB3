@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { providers, Contract, utils, Signer } from "ethers";
+import { providers, Contract, utils, Signer, ethers } from "ethers";
 import { abi } from "../constants/UsdcMetadata.json";
 import { USDCGoerliAddress, UDSCaddress } from "../constants/index";
 import { abi as usdcAbi } from "../constants/mainUsdcMetadata.json";
@@ -49,6 +49,7 @@ export default function Usdc({}: Props) {
   };
 
   const [connectwallet, setWalletConnected] = useState<boolean>(false);
+  const [currentAccount, setCurrentAccount] = useState<string>("");
   const [approve, setApprove] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [isApproved, setIsApproved] = useState<boolean>(false);
@@ -57,6 +58,32 @@ export default function Usdc({}: Props) {
   const [approveAmount, setApproveAmount] = useState<number>(0);
   const web3ModalRef = useRef<any>();
   // const checkIfConnected = localStorage.getItem("connected")
+
+  //Function to check if the account has connected before
+  const checkIfWalletHasConnectedBefore = async () => {
+    const { ethereum } = window;
+    const accounts: string[] = await ethereum.request({
+      method: "eth_accounts",
+    });
+    if (accounts.length !== 0) {
+      setCurrentAccount(accounts[0]);
+      console.log(currentAccount,"👮‍♂️")
+    }
+  };
+
+  const newConnectWallet = async () => {
+    try {
+      if (typeof window.ethereum != "undefined") {
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+        console.log("i see a metamask");
+        console.log("i connected to my metamask account");
+      } else {
+        console.log("ethereum does not exist");
+      }
+    } catch (e: unknown) {
+      console.log(e);
+    }
+  };
   const getProviderAndSigner = async (): Promise<{
     provider: providers.Web3Provider;
     signer: providers.JsonRpcSigner;
@@ -150,8 +177,10 @@ export default function Usdc({}: Props) {
           disableInjectedProvider: false,
         });
       }
-      connectWalletFunction();
-      setIsConnected(true);
+      const {signer}= await getProviderAndSigner()
+      const account= await signer.getAddress()
+      setWalletConnected(true);
+      setIsConnected(true)
       toast.success("Successfully connected wallet", {
         icon: "✅",
         theme: "dark",
@@ -165,23 +194,20 @@ export default function Usdc({}: Props) {
     }
   };
 
-  const connectWalletFunction = async () => {
-    try {
-      await getProviderAndSigner();
-      setWalletConnected(true);
-    } catch (e: unknown) {
-      console.log(e);
-    }
-  };
 
   useEffect(() => {
     async function getSessionData() {
-      const { provider, signer } = await getProviderAndSigner();
-      const account = await signer.getAddress()
-      if (account.length!==null && account.length>1) {
+      const { ethereum } = window;
+      const accounts: string[] = await ethereum.request({
+        method: "eth_accounts",
+      });
+      if (accounts.length !== 0) {
+        setCurrentAccount(accounts[0]);
+        console.log(currentAccount,"👮‍♂️")
+      }
+      if (currentAccount !== null && currentAccount.length > 12) {
         setWalletConnected(true);
-        setIsConnected(false);
-        setApprove(false);
+        setIsConnected(true);
         console.log("👱‍♀️");
         toast.warning("You have connected before❗❗", {
           icon: "👼",
@@ -190,9 +216,9 @@ export default function Usdc({}: Props) {
       }
     }
     setTimeout(() => {
-      getSessionData()
+       getSessionData();
     }, 4000);
-  }, [connect]);
+  }, [currentAccount]);
 
   const render = () => {
     if (!connectwallet) {
@@ -225,7 +251,6 @@ export default function Usdc({}: Props) {
         </div>
       );
     } else {
-      if (connect) {
         if (approve) {
           return (
             <div className=" animate-bounce text-[20px] font-mono lg:text-[40px] text-white font-bold">
@@ -270,7 +295,7 @@ export default function Usdc({}: Props) {
             </div>
           );
         }
-      } else {
+     if(connect){
         return (
           <div className="flex flex-col lg:flex-row items-center justify-between">
             <motion.div
