@@ -9,18 +9,8 @@ import { Spinner } from "@chakra-ui/react";
 import Web3Modal from "web3modal";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import Draw1 from "../public/draw1.svg";
-import Draw2 from "../public/draw2.svg";
-import Draw3 from "../public/draw3.svg";
-import Draw4 from "../public/draw4.svg";
-import Draw5 from "../public/draw5.svg";
-import Draw6 from "../public/draw6.svg";
-import Draw7 from "../public/draw7.svg";
-import Draw8 from "../public/draw8.svg";
-import Draw9 from "../public/draw9.svg";
-import Draw10 from "../public/draw10.svg";
-import Draw11 from "../public/draw11.svg";
-import Draw12 from "../public/draw12.svg";
+
+
 
 type Props = {};
 
@@ -117,7 +107,7 @@ export default function Usdc({}: Props) {
     return new Contract(address, abi, ProviderOrSigner);
   };
 
-  const Approve = async () => {
+  const Approve = async (approveAmount:string) => {
     try {
       // const { provider, signer } = await getProviderAndSigner();
       const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -129,7 +119,7 @@ export default function Usdc({}: Props) {
       );
       const approve = await UsdcContract.approve(
         USDCGoerliAddress,
-        utils.parseUnits(approveAmount.toString(), 6)
+        utils.parseUnits(approveAmount, 6)
       );
       setApprove(true);
       await approve.wait();
@@ -147,23 +137,25 @@ export default function Usdc({}: Props) {
 
   const fund = async (amount: string) => {
     try {
-      const { provider, signer } = await getProviderAndSigner();
+      // const { provider, signer } = await getProviderAndSigner();
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer= provider.getSigner()
       const UsdcContract = await getUsdcContractInstance(
         USDCGoerliAddress,
         abi,
         signer
       );
-      const fund = await UsdcContract.fund(amount, { gasLimit: 30000 });
+      const fund = await UsdcContract.Fund(amount, { gasLimit: 30000 });
       setLoading(true);
       await fund.wait();
       setLoading(false);
-      toast.success("The Smart contract has been successfully funded", {
+      toast.success("The address has been funded successfully 😁", {
         icon: "💸",
         theme: "dark",
       });
     } catch (e: unknown) {
       console.log(e);
-      toast.error("The smart Contract could not fund the smart contract", {
+      toast.error("The address was not funded ❗❗", {
         icon: "❌",
         theme: "dark",
       });
@@ -248,7 +240,7 @@ export default function Usdc({}: Props) {
             </motion.button>
           </div>
           <div className="flex-1 animate-pulse scale-75 md:scale-100">
-            <Image src={Draw1} height={"400"} width={"400"} alt="" />
+            <Image src={"/draw1.svg"} height={"400"} width={"400"} alt="" />
           </div>
         </div>
       );
@@ -284,15 +276,15 @@ export default function Usdc({}: Props) {
                 </div>
                 <div
                   className="order-3 flex justify-center items-center font-mono hover:shadow-md animate-pulse text-[20px]  transition-all hover:shadow-white bg-black py-4 rounded-3xl w-60 text-white cursor-pointer font-bold scale-75 md:scale-100  md:hover:scale-105 hover:scale-90 ml-[-30px]  md:ml-2 lg:ml-0 "
-                  onClick={() => {
-                    fund(donationAmount);
+                  onClick={async() => {
+                    await fund(donationAmount);
                   }}
                 >
                   Donate
                 </div>
               </div>
               <div className="flex justify-center animate-pulse lg:scale-100 scale-75 my-4 md:my-0 ml-[-10px] items-center md:ml-32 ">
-                <Image src={Draw4} height={"400"} width={"400"} alt="" />
+                <Image src={"/draw4.svg"} height={"400"} width={"400"} alt="" />
               </div>
             </div>
           );
@@ -331,14 +323,14 @@ export default function Usdc({}: Props) {
                   animate="animate"
                   style={{ transition: "all 0.3s" }}
                   className="flex justify-center items-center font-mono hover:shadow-md animate-pulse text-[20px]  transition-all hover:shadow-white bg-black py-4 rounded-3xl w-60 text-white cursor-pointer scale-75 md:scale-100 font-bold md:hover:scale-105 hover:scale-90 ml-16 md:ml-0"
-                  onClick={Approve}
+                  onClick={async()=>{ await Approve(approveAmount.toString())}}
                 >
                   Approve🦧
                 </motion.button>
               )}
             </motion.div>
             <motion.div className="flex-1 animate-pulse md:mt-4 lg:mt-0 scale-75 md:scale-100">
-              <Image src={Draw7} height={"400"} width={"400"} alt="" />
+              <Image src={"/draw7.svg"} height={"400"} width={"400"} alt="" />
             </motion.div>
           </div>
         );
