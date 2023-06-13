@@ -6,11 +6,11 @@ import Characters from '../components/Characters'
 
 const Home: NextPage = () => {
   return (
-    // <div className='bg-emerald-900 text-black h-screen flex items-center justify-center'>
+    <div className='bg-emerald-900 text-black h-screen flex items-center justify-center'>
    
-      <div >
-          <div className='capitalize text-4xl font-extrabold pt-4 font-mono text-center'>Rich and morty</div>
-      <Characters/>
+      // <div >
+          {/* <div className='capitalize text-4xl font-extrabold py-2 font-mono text-center'>Rich and morty</div> */}
+       <Usdc/>
       </div>
     // </div>
   )
