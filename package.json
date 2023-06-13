@@ -16,6 +16,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-moralis": "^1.4.2",
+    "react-query": "^3.39.3",
     "react-toastify": "^9.1.1",
     "web3modal": "^1.9.12"
   },
